@@ -1,161 +1,110 @@
-const socket = io();
-const tg = window.Telegram?.WebApp;
+// REPLACE THIS WITH YOUR DEPLOYED RENDER/RAILWAY SERVER URL
+const SERVER_URL = "http://localhost:3000"; 
+const socket = io(SERVER_URL);
 
-if (tg) { tg.expand(); tg.ready(); }
+// --- TELEGRAM WEB APP INTEGRATION ---
+const tg = window.Telegram.WebApp;
 
-let roomId = null;
-const userId = tg?.initDataUnsafe?.user?.id?.toString() || 'usr_' + Math.floor(Math.random() * 10000);
-const username = tg?.initDataUnsafe?.user?.first_name || 'Player_' + userId.slice(-4);
+// Anti-Leave Protection: User ko galti se game minimize/close karne par warning dega
+tg.expand();
+tg.enableClosingConfirmation(); 
+tg.ready();
 
-const urlParams = new URLSearchParams(window.location.search);
-const directRoomId = urlParams.get('room');
-if (directRoomId) connectToRoom(directRoomId);
+// User Data Extract karein
+const user = tg.initDataUnsafe?.user;
+const myName = user ? (user.first_name + (user.last_name ? " " + user.last_name : "")) : "Guest_" + Math.floor(Math.random()*1000);
+const myDp = user ? user.photo_url : "https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-function createNewRoom() {
-    const generatedId = Math.floor(1000 + Math.random() * 9000).toString();
-    connectToRoom(generatedId);
+document.getElementById('user-name').innerText = myName;
+document.getElementById('user-dp').src = myDp;
+
+let currentRoom = "";
+
+// --- URL SE AUTO JOIN LOGIC (Agar Nia bot ne startapp bheja hai) ---
+const startParam = tg.initDataUnsafe?.start_param;
+if (startParam) {
+    document.getElementById('join-code').value = startParam;
+    setTimeout(() => {
+        document.getElementById('join-btn').click();
+    }, 1000); // 1 sec delay takki socket connect ho jaye
 }
 
-function joinExistingRoom() {
-    const inputVal = document.getElementById('join-room-input').value.trim();
-    if (inputVal.length < 4) { alert("Enter valid 4 digit code!"); return; }
-    connectToRoom(inputVal);
-}
+// --- BUTTON CLICKS ---
+document.getElementById('create-btn').addEventListener('click', () => {
+    socket.emit('createRoom', { name: myName, dp: myDp });
+});
 
-function connectToRoom(targetRoomId) {
-    roomId = targetRoomId;
-    window.history.pushState({}, '', `?room=${roomId}`);
-    document.getElementById('room-id-display').innerText = roomId;
-    document.getElementById('lobby-screen').style.display = 'none';
-    document.getElementById('game-screen').style.display = 'flex';
-    generateLudoMatrix();
-    socket.emit('auth_session', { roomId, userId, username });
-}
-
-function generateLudoMatrix() {
-    const targetBoard = document.getElementById('ludo-grid');
-    targetBoard.innerHTML = '';
-
-    // Create Home Base Containers (Spans 6x6 blocks on grid layout)
-    const bases = [
-        { name: 'red-base', rStart: 1, cStart: 1 },
-        { name: 'green-base', rStart: 1, cStart: 10 },
-        { name: 'blue-base', rStart: 10, cStart: 1 },
-        { name: 'yellow-base', rStart: 10, cStart: 10 }
-    ];
-
-    // Build standard 15x15 cell units properly tracking paths
-    for (let r = 0; r < 15; r++) {
-        for (let c = 0; c < 15; c++) {
-            
-            // Intercept and skip generating individual cells inside standard bases to structure pockets
-            if ((r < 6 && c < 6) || (r < 6 && c > 8) || (r > 8 && c < 6) || (r > 8 && c > 8)) {
-                if (r === 0 && c === 0) { createBaseBlock(targetBoard, 'red-base', 1, 1); }
-                if (r === 0 && c === 9) { createBaseBlock(targetBoard, 'green-base', 1, 10); }
-                if (r === 9 && c === 0) { createBaseBlock(targetBoard, 'blue-base', 10, 1); }
-                if (r === 9 && c === 9) { createBaseBlock(targetBoard, 'yellow-base', 10, 10); }
-                continue;
-            }
-
-            // Center Intersection Nexus Triangles
-            if (r >= 6 && r <= 8 && c >= 6 && c <= 8) {
-                if (r === 6 && c === 6) {
-                    const center = document.createElement('div');
-                    center.className = 'nexus-center';
-                    center.style.gridColumn = '7 / span 3'; center.style.gridRow = '7 / span 3';
-                    center.innerHTML = '<div class="nexus-piece np-top"></div><div class="nexus-piece np-bottom"></div><div class="nexus-piece np-left"></div><div class="nexus-piece np-right"></div>';
-                    targetBoard.appendChild(center);
-                }
-                continue;
-            }
-
-            // Normal Track Steps
-            const cell = document.createElement('div');
-            cell.className = 'cell';
-            cell.id = `grid-${r}-${c}`;
-
-            // Path Coloration matching visual layouts from 1000052305.png
-            if (r === 7 && c > 0 && c < 6) cell.classList.add('classic-red');
-            else if (c === 7 && r > 0 && r < 6) cell.classList.add('classic-green');
-            else if (r === 7 && c > 8 && c < 14) cell.classList.add('classic-yellow');
-            else if (c === 7 && r > 8 && r < 14) cell.classList.add('classic-blue');
-            else if (r === 6 && c === 1) { cell.classList.add('classic-red'); cell.innerHTML = '<span class="arrow-mark arrow-red">➔</span>'; }
-            else if (r === 1 && c === 8) { cell.classList.add('classic-green'); cell.innerHTML = '<span class="arrow-mark arrow-green">➔</span>'; }
-            else if (r === 8 && c === 13) { cell.classList.add('classic-yellow'); cell.innerHTML = '<span class="arrow-mark arrow-yellow">➔</span>'; }
-            else if (r === 13 && c === 6) { cell.classList.add('classic-blue'); cell.innerHTML = '<span class="arrow-mark arrow-blue">➔</span>'; }
-            
-            // Safe Star Coordinates
-            if ((r===8 && c===2) || (r===2 && c===6) || (r===6 && c===12) || (r===12 && c===8)) {
-                cell.classList.add('star-zone');
-            }
-
-            targetBoard.appendChild(cell);
-        }
+document.getElementById('join-btn').addEventListener('click', () => {
+    const code = document.getElementById('join-code').value.toUpperCase();
+    if (code) {
+        socket.emit('joinRoom', { roomCode: code, userData: { name: myName, dp: myDp } });
     }
-}
+});
 
-function createBaseBlock(parent, className, gRow, gCol) {
-    const base = document.createElement('div');
-    base.className = `inner-home-pocket ${className}`;
-    base.style.gridRow = `${gRow} / span 6`; base.style.gridCol = `${gCol} / span 6`;
+// --- SOCKET EVENTS ---
+socket.on('roomCreated', (code) => {
+    currentRoom = code;
+    document.getElementById('display-room-code').innerText = code;
+    document.getElementById('menu-screen').style.display = 'none';
+    document.getElementById('ludo-board').style.display = 'block';
+});
+
+socket.on('updateLobby', (roomData) => {
+    currentRoom = roomData.roomCode || document.getElementById('display-room-code').innerText;
+    document.getElementById('display-room-code').innerText = currentRoom;
+    document.getElementById('spectator-count').innerText = roomData.spectators.length;
+    document.getElementById('menu-screen').style.display = 'none';
+    document.getElementById('ludo-board').style.display = 'block';
     
-    // 4 inner spawn spots matching images
-    for(let i=0; i<4; i++) {
-        const dock = document.createElement('div');
-        dock.className = 'pocket-dock';
-        base.appendChild(dock);
+    // Yahan aap players ke DPs board ke kone me draw karne ka function call karenge
+});
+
+socket.on('spectatorMode', (msg) => {
+    alert(msg);
+});
+
+// --- DICE ROLL (Sound & Animation) ---
+const rollSound = new Audio('https://www.soundjay.com/misc/sounds/dice-roll-1.mp3'); // Smooth sound
+
+document.getElementById('roll-dice-btn').addEventListener('click', () => {
+    if(!currentRoom) return;
+    rollSound.play();
+    socket.emit('rollDice', { roomCode: currentRoom, playerColor: 'red' }); // Dynamic color aayega DB se
+});
+
+socket.on('diceRolled', (data) => {
+    const diceDiv = document.getElementById('dice-result');
+    diceDiv.innerText = "🎲 Rolling...";
+    setTimeout(() => {
+        diceDiv.innerText = data.diceValue;
+    }, 500); // Fake smooth delay
+});
+
+// --- LIVE CHAT SYSTEM ---
+document.getElementById('send-msg-btn').addEventListener('click', sendMessage);
+document.getElementById('chat-input').addEventListener('keypress', (e) => {
+    if(e.key === 'Enter') sendMessage();
+});
+
+function sendMessage() {
+    const msgInput = document.getElementById('chat-input');
+    const msg = msgInput.value.trim();
+    if(msg && currentRoom) {
+        socket.emit('sendMessage', { roomCode: currentRoom, message: msg, senderName: myName });
+        msgInput.value = '';
     }
-    parent.appendChild(base);
 }
 
-function requestDiceRoll() {
-    document.getElementById('visual-dice').classList.add('rolling-fast');
-    socket.emit('roll_dice');
+socket.on('receiveMessage', ({ senderName, message }) => {
+    const chatBox = document.getElementById('chat-messages');
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'msg';
+    msgDiv.innerHTML = `<strong>${senderName}:</strong> ${message}`;
+    chatBox.appendChild(msgDiv);
+    chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll
+});
+
+// --- WINNER CONFETTI FUNCTION ---
+function triggerWin() {
+    confetti({ particleCount: 150, spread: 70, origin: { y: 0.6 } });
 }
-
-socket.on('room_update', (room) => {
-    document.getElementById('player-count').innerText = room.players.length;
-    document.getElementById('spectator-count').innerText = room.spectatorsCount;
-    document.getElementById('timer-sec').innerText = room.timeLeft;
-
-    const activePlayer = room.players[room.activeTurn];
-    if (activePlayer) {
-        const badge = document.getElementById('turn-box');
-        badge.innerText = `${activePlayer.name}'s Turn`;
-        document.getElementById('roll-trigger').disabled = (activePlayer.id !== userId);
-    }
-
-    document.querySelectorAll('.token-entity').forEach(e => e.remove());
-    Object.keys(room.tokens).forEach(color => {
-        const token = room.tokens[color];
-        const hostCell = document.getElementById(`grid-${token.r}-${token.c}`);
-        if (hostCell) {
-            const tokenEl = document.createElement('div');
-            tokenEl.className = `token-entity token-${color.toLowerCase()}`;
-            if (activePlayer && activePlayer.color === color) tokenEl.classList.add('pulse-active');
-            hostCell.appendChild(tokenEl);
-        }
-    });
-});
-
-socket.on('dice_result', ({ roll }) => {
-    const diceBox = document.getElementById('visual-dice');
-    const faceSymbols = ['⚀', '⚁', '⚂', '⚃', '⚄', '⚅'];
-    diceBox.classList.remove('rolling-fast');
-    diceBox.innerText = faceSymbols[roll - 1];
-    if (roll === 6) confetti({ particleCount: 40, spread: 50 });
-});
-
-function dispatchChat() {
-    const input = document.getElementById('chat-msg');
-    if (!input.value.trim()) return;
-    socket.emit('send_message', input.value);
-    input.value = '';
-}
-function handleChatKey(e) { if (e.key === 'Enter') dispatchChat(); }
-
-socket.on('new_message', (msg) => {
-    const container = document.getElementById('chat-screen');
-    container.innerHTML += `<div><strong>${msg.sender}:</strong> ${msg.text}</div>`;
-    container.scrollTop = container.scrollHeight;
-});
