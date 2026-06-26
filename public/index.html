@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nia Ludo Premium Arena</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+    <div class="glass-container">
+        <div class="cyber-header">
+            <div class="room-info">ROOM: <span id="room-id-display" class="gold-glow">----</span></div>
+            <div id="turn-box" class="turn-status red-glow">CONNECTING ENGINE...</div>
+            <div class="counters">
+                <span>👥 <span id="player-count">0</span>/4</span>
+                <span>👁️ <span id="spectator-count">0</span> Watching</span>
+            </div>
+        </div>
+
+        <div class="arena-layout">
+            <div class="board-wrapper">
+                <div class="ludo-board" id="ludo-grid"></div>
+                
+                <div class="action-dock">
+                    <div id="visual-dice" class="dice-block">⚀</div>
+                    <div class="timer-ring">⏳ <span id="timer-sec">30</span>s</div>
+                    <button id="roll-trigger" class="gold-btn" onclick="requestDiceRoll()">ROLL DICE</button>
+                </div>
+            </div>
+
+            <div class="chat-sidebar" id="chat-panel">
+                <div class="chat-title">💬 Live Room Logs</div>
+                <div class="chat-output" id="chat-screen"></div>
+                <div class="chat-input-bar">
+                    <input type="text" id="chat-msg" placeholder="Type trash talk..." onkeypress="handleChatKey(event)">
+                    <button onclick="dispatchChat()">🔥</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
