@@ -3,68 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nia Ludo Classic Arena</title>
+    <title>Nia Premium Ludo 🍷</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Telegram Web App API -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <!-- Confetti Animation -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
+    <div id="app-container">
+        
+        <!-- Main Game Area -->
+        <div id="game-area">
+            <header class="glass-header">
+                <div class="user-info">
+                    <img id="user-dp" src="assets/default.png" alt="DP">
+                    <span id="user-name">Loading...</span>
+                </div>
+                <div class="room-info">
+                    Room: <span id="display-room-code">----</span>
+                </div>
+                <div class="spectator-info">
+                    👁 <span id="spectator-count">0</span>
+                </div>
+            </header>
 
-    <!-- 🏠 LOBBY SCREEN -->
-    <div class="lobby-container" id="lobby-screen">
-        <div class="lobby-card">
-            <h1 class="title-logo">LUDO</h1>
-            <p class="subtitle-tag">MULTIPLAYER CLASSIC</p>
-            
-            <div class="menu-actions">
-                <button class="action-btn create-btn" onclick="createNewRoom()">CREATE PRIVATE ROOM</button>
-                
-                <div class="input-divider">
-                    <input type="number" id="join-room-input" placeholder="Enter Room Code..." max="9999">
-                    <button class="action-btn join-btn" onclick="joinExistingRoom()">JOIN MATCH</button>
+            <div id="menu-screen" class="glass-panel">
+                <h1>Nɪᴀ Lᴜᴅᴏ 🍷</h1>
+                <button id="create-btn" class="glow-btn">Create Private Room</button>
+                <div class="join-section">
+                    <input type="text" id="join-code" placeholder="Enter Room Code" autocomplete="off">
+                    <button id="join-btn" class="glow-btn outline">Join Room</button>
+                </div>
+            </div>
+
+            <!-- Visual Ludo Board Placeholder -->
+            <div id="ludo-board" style="display: none;">
+                <div class="board-grid">
+                    <!-- Board rendering logic goes here via JS -->
+                    <div class="center-home">⭐</div>
+                </div>
+                <div class="controls">
+                    <button id="roll-dice-btn" class="glow-btn">🎲 Roll Dice</button>
+                    <div id="dice-result">--</div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- 🎲 CLASSIC GAME SCREEN -->
-    <div class="game-container" id="game-screen" style="display: none;">
-        <!-- Top Info Header -->
-        <div class="match-meta-bar">
-            <div class="room-tag">ROOM ID: <span id="room-id-display">----</span></div>
-            <div class="spectate-counter">👥 <span id="player-count">0</span>/4 | 👁️ <span id="spectator-count">0</span></div>
-        </div>
-
-        <!-- The Main Board Field -->
-        <div class="board-viewport">
-            <div class="ludo-arena-board" id="ludo-grid"></div>
-        </div>
-
-        <!-- Bottom Game Controls & Status -->
-        <div class="game-footer-controls">
-            <div id="turn-box" class="player-turn-alert">Waiting for players...</div>
-            
-            <div class="gameplay-dock">
-                <!-- Profile Pin Badge & Dice Combo Box matching 1000052305.png -->
-                <div class="player-dice-panel">
-                    <div class="avatar-badge-pin">
-                        <div class="pin-icon-preview"></div>
-                    </div>
-                    <div id="visual-dice" class="classic-3d-dice">⚀</div>
-                </div>
-                
-                <div class="timer-section">⏳ <span id="timer-sec">30</span>s</div>
-                <button id="roll-trigger" class="roll-action-trigger" onclick="requestDiceRoll()">ROLL</button>
+        <!-- Right Side Live Chat -->
+        <div id="chat-panel" class="glass-panel">
+            <div class="chat-header">Live Chat 💬</div>
+            <div id="chat-messages">
+                <!-- Messages will appear here -->
             </div>
-        </div>
-
-        <!-- Live Integrated Minimal Chat -->
-        <div class="compact-chat-drawer">
-            <div class="chat-logs" id="chat-screen"></div>
-            <div class="chat-bar-form">
-                <input type="text" id="chat-msg" placeholder="Send chat..." onkeypress="handleChatKey(event)">
-                <button onclick="dispatchChat()">➔</button>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off">
+                <button id="send-msg-btn">➤</button>
             </div>
         </div>
     </div>
