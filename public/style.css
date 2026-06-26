@@ -1,90 +1,137 @@
 :root {
-    --bg-dark: #070913;
-    --panel-purple: rgba(23, 18, 47, 0.6);
-    --neon-blue: #00f2fe;
-    --neon-gold: #ffcc00;
-    --hot-pink: #ff0055;
-    --neon-green: #00ff66;
+    --ludo-red: #e52521;
+    --ludo-green: #009647;
+    --ludo-blue: #0071bb;
+    --ludo-yellow: #fecb00;
+    --cell-border: #cbd5e1;
 }
 
 body {
-    margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif;
-    background: radial-gradient(circle at center, #141233 0%, var(--bg-dark) 100%);
-    color: #fff; height: 100vh; display: flex; justify-content: center; align-items: center;
-    overflow: hidden;
+    margin: 0; padding: 0; font-family: 'Arial Rounded MT Bold', system-ui, sans-serif;
+    background: radial-gradient(circle, #2a82c9 0%, #174b80 100%);
+    height: 100vh; display: flex; justify-content: center; align-items: center;
+    overflow: hidden; user-select: none;
 }
 
-.glass-container {
-    width: 95vw; max-width: 900px; height: 92vh;
-    background: var(--panel-purple); backdrop-filter: blur(16px);
-    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px;
-    padding: 15px; display: flex; flex-direction: column; gap: 15px;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-}
+/* 🏠 Lobby Section Styling */
+.lobby-container { width: 100vw; max-width: 430px; height: 100vh; display: flex; justify-content: center; align-items: center; }
+.lobby-card { background: rgba(255, 255, 255, 0.95); border-radius: 24px; padding: 30px; width: 85%; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); border: 4px solid var(--ludo-yellow); }
+.title-logo { font-size: 48px; color: var(--ludo-red); margin: 0; text-shadow: 2px 2px 0px var(--ludo-yellow), -2px -2px 0px #000; letter-spacing: 2px; }
+.subtitle-tag { font-size: 12px; color: #475569; font-weight: bold; letter-spacing: 3px; margin-bottom: 30px; }
+.menu-actions { display: flex; flex-direction: column; gap: 20px; }
+.action-btn { width: 100%; padding: 14px; border-radius: 12px; border: none; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.15); transition: transform 0.1s; }
+.action-btn:active { transform: scale(0.97); }
+.create-btn { background: var(--ludo-green); color: white; }
+.join-btn { background: var(--ludo-blue); color: white; }
+.input-divider { background: #f1f5f9; padding: 10px; border-radius: 16px; display: flex; flex-direction: column; gap: 8px; }
+.input-divider input { padding: 12px; border-radius: 8px; border: 2px solid #cbd5e1; font-size: 16px; text-align: center; font-weight: bold; }
 
-.cyber-header {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(0,0,0,0.4); padding: 12px 20px; border-radius: 14px;
-    border: 1px solid rgba(255,255,255,0.05); font-weight: bold; font-size: 13px;
-}
-.gold-glow { color: var(--neon-gold); text-shadow: 0 0 8px var(--neon-gold); }
+/* 🎲 Main Game Environment */
+.game-container { width: 100vw; max-width: 430px; height: 100vh; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; padding: 10px; }
+.match-meta-bar { display: flex; justify-content: space-between; background: rgba(0,0,0,0.4); padding: 8px 14px; border-radius: 20px; color: white; font-size: 13px; font-weight: bold; }
 
-.turn-status { padding: 6px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
-.red-glow { background: var(--hot-pink); box-shadow: 0 0 15px var(--hot-pink); }
-.green-glow { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
-.yellow-glow { background: var(--neon-gold); color: #000; box-shadow: 0 0 15px var(--neon-gold); }
-.blue-glow { background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
-
-.arena-layout { display: flex; gap: 15px; flex: 1; height: calc(100% - 70px); }
-.board-wrapper { flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
-
-/* 15x15 Matrix Canvas Setup */
-.ludo-board {
+/* Perfect Classic Ludo Board Core Structure */
+.board-viewport { display: flex; justify-content: center; align-items: center; margin: 15px 0; }
+.ludo-arena-board {
     display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(15, 1fr);
-    width: 360px; height: 360px; background: #0f1124; border-radius: 16px; padding: 6px;
-    border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+    width: 360px; height: 360px; background: #ffffff; border: 6px solid #111;
+    box-shadow: 0 12px 28px rgba(0,0,0,0.4); position: relative;
 }
-.cell { background: #181b36; border: 1px solid #252a54; display: flex; justify-content: center; align-items: center; position: relative; }
 
-/* Home Bases & Pathway Visual Fills */
-.red-base { background: var(--hot-pink) !important; opacity: 0.85; }
-.green-base { background: var(--neon-green) !important; opacity: 0.85; }
-.yellow-base { background: var(--neon-gold) !important; opacity: 0.85; }
-.blue-base { background: var(--neon-blue) !important; opacity: 0.85; }
-.center-nexus { background: linear-gradient(45deg, var(--hot-pink), var(--neon-green), var(--neon-gold), var(--neon-blue)) !important; }
-.star-node::after { content: '✦'; color: var(--neon-blue); font-size: 14px; position: absolute; }
+/* Cell Matrix & Mapping colors matching 1000052305.png verbatims */
+.cell { background: #ffffff; border: 1px solid var(--cell-border); display: flex; justify-content: center; align-items: center; position: relative; }
 
-/* Premium Fluid Tokens */
+.classic-red { background: var(--ludo-red) !important; }
+.classic-green { background: var(--ludo-green) !important; }
+.classic-blue { background: var(--ludo-blue) !important; }
+.classic-yellow { background: var(--ludo-yellow) !important; }
+
+/* Base Interior Panel Layout (White inner box with home spawn circles) */
+.inner-home-pocket {
+    grid-column: span 6; grid-row: span 6; background: white; border: 15px solid transparent;
+    display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 15px; padding: 5px; box-sizing: border-box;
+}
+.red-base .inner-home-pocket { border-color: var(--ludo-red); }
+.green-base .inner-home-pocket { border-color: var(--ludo-green); }
+.blue-base .inner-home-pocket { border-color: var(--ludo-blue); }
+.yellow-base .inner-home-pocket { border-color: var(--ludo-yellow); }
+
+.pocket-dock {
+    border-radius: 50%; border: 2px solid #334155; display: flex; justify-content: center; align-items: center;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2); background: #f8fafc; position: relative;
+}
+.red-base .pocket-dock { background: var(--ludo-red); }
+.green-base .pocket-dock { background: var(--ludo-green); }
+.blue-base .pocket-dock { background: var(--ludo-blue); }
+.yellow-base .pocket-dock { background: var(--ludo-yellow); }
+
+/* Center Triangular Intersection */
+.nexus-center { background: #fff !important; position: relative; }
+.nexus-piece { width: 0; height: 0; position: absolute; border-style: solid; }
+.np-top { border-width: 36px 36px 0 36px; border-color: var(--ludo-green) transparent transparent transparent; top: 0; left: 0; }
+.np-bottom { border-width: 0 36px 36px 36px; border-color: transparent transparent var(--ludo-blue) transparent; bottom: 0; left: 0; }
+.np-left { border-width: 36px 0 36px 36px; border-color: transparent transparent transparent var(--ludo-red); top: 0; left: 0; }
+.np-right { border-width: 36px 36px 36px 0; border-color: transparent var(--ludo-yellow) transparent transparent; top: 0; right: 0; }
+
+/* Route Decorators & Stars */
+.star-zone::after { content: '⭐'; font-size: 11px; color: #334155; font-weight: bold; }
+.arrow-mark { font-weight: bold; font-size: 14px; position: absolute; z-index: 2; }
+.arrow-red { color: var(--ludo-red); transform: rotate(0deg); left: 4px; }
+.arrow-green { color: var(--ludo-green); transform: rotate(90deg); top: 2px; }
+.arrow-yellow { color: var(--ludo-yellow); transform: rotate(180deg); right: 4px; }
+.arrow-blue { color: var(--ludo-blue); transform: rotate(270deg); bottom: 2px; }
+
+/* 📍 MAP PIN STYLE TOKENS (Accurate Replication of 1000052305.png) */
 .token-entity {
-    width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff;
-    box-shadow: 0 0 12px rgba(255,255,255,0.8); position: absolute; z-index: 10;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    width: 18px; height: 24px; position: absolute; z-index: 10;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    filter: drop-shadow(0px 3px 2px rgba(0,0,0,0.3));
+    transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
-.pulse-active { animation: floatToken 0.6s infinite alternate; scale: 1.2; }
-@keyframes floatToken { 
-    0% { transform: translateY(0); } 
-    100% { transform: translateY(-4px); box-shadow: 0 0 18px #fff; } 
+/* Building map pin geometry using pure pseudo elements */
+.token-entity::before {
+    content: ''; width: 16px; height: 16px; background: white;
+    border-radius: 50% 50% 50% 0; transform: rotate(-45deg);
+    position: absolute; top: 0; border: 1.5px solid #475569;
 }
-
-/* Action Control Dock */
-.action-dock { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 14px; width: 85%; justify-content: space-between; }
-.dice-block { font-size: 36px; background: #fff; color: #000; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; border-radius: 10px; box-shadow: 0 0 15px rgba(255,255,255,0.2); transition: transform 0.3s ease; }
-.rolling-fast { animation: hyperSpin 0.15s infinite linear; }
-@keyframes hyperSpin { 100% { transform: rotate(360deg); } }
-
-.gold-btn { background: linear-gradient(45deg, var(--neon-gold), #ff9900); border: none; padding: 12px 28px; border-radius: 10px; font-weight: bold; cursor: pointer; letter-spacing: 1px; color: #000; box-shadow: 0 4px 15px rgba(255,204,0,0.4); }
-
-/* Premium Sidebar Live Chat UI */
-.chat-sidebar { flex: 0.8; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; overflow: hidden; }
-.chat-title { padding: 12px; font-weight: bold; font-size: 12px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--neon-blue); text-transform: uppercase; }
-.chat-output { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
-.chat-input-bar { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); }
-.chat-input-bar input { flex: 1; background: #070913; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; padding: 8px; font-size: 12px; }
-.chat-input-bar button { background: var(--neon-blue); border: none; padding: 0 14px; border-radius: 8px; cursor: pointer; }
-
-/* Responsive Viewports Layout adjustments for Telegram Mini App Mobile screens */
-@media(max-width: 768px) {
-    .arena-layout { flex-direction: column; }
-    .chat-sidebar { flex: none; height: 130px; }
-    .ludo-board { width: 300px; height: 300px; }
+.token-entity::after {
+    content: ''; width: 8px; height: 8px; border-radius: 50%;
+    position: absolute; top: 5px; z-index: 11;
 }
+/* Assign Core Color Variants inside the pin drops */
+.token-red::after { background: var(--ludo-red); }
+.token-green::after { background: var(--ludo-green); }
+.token-blue::after { background: var(--ludo-blue); }
+.token-yellow::after { background: var(--ludo-yellow); }
+
+.pulse-active { transform: translateY(-4px) scale(1.1); filter: drop-shadow(0px 6px 4px rgba(0,0,0,0.4)); }
+
+/* 🎛️ Bottom Controls Panel & Dice Style */
+.game-footer-controls { background: rgba(255,255,255,0.92); border-radius: 20px; padding: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.2); border: 2px solid #cbd5e1; }
+.player-turn-alert { text-align: center; font-weight: bold; font-size: 14px; margin-bottom: 8px; color: #1e293b; text-transform: uppercase; }
+
+.gameplay-dock { display: flex; align-items: center; justify-content: space-between; }
+.player-dice-panel { display: flex; align-items: center; background: linear-gradient(135deg, #0071bb, #00d2ff); border: 3px solid var(--ludo-yellow); border-radius: 12px; padding: 4px 8px; gap: 8px; }
+
+.avatar-badge-pin { width: 30px; height: 30px; display: flex; justify-content: center; align-items: center; background: rgba(255,255,255,0.2); border-radius: 8px; }
+.pin-icon-preview { width: 10px; height: 14px; background: white; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); position: relative; }
+.pin-icon-preview::after { content: ''; width: 4px; height: 4px; background: var(--ludo-blue); border-radius: 50%; position: absolute; top: 3px; left: 3px; }
+
+.classic-3d-dice {
+    font-size: 28px; background: linear-gradient(145deg, #ffffff, #e2e8f0); color: #000;
+    width: 38px; height: 38px; display: flex; justify-content: center; align-items: center;
+    border-radius: 8px; box-shadow: inset -2px -2px 4px rgba(0,0,0,0.15), 0 3px 6px rgba(0,0,0,0.2);
+    font-weight: bold; border: 1px solid #94a3b8;
+}
+.rolling-fast { animation: spinDice 0.15s infinite linear; }
+@keyframes spinDice { 100% { transform: rotate(360deg); } }
+
+.timer-section { font-weight: bold; color: #334155; font-size: 14px; }
+.roll-action-trigger { background: linear-gradient(180deg, #ffdd00, #fecb00); border: 2px solid #b48a00; padding: 10px 24px; border-radius: 10px; font-weight: bold; font-size: 15px; cursor: pointer; color: #000; box-shadow: 0 3px 6px rgba(0,0,0,0.1); }
+
+/* Integrated Messenger */
+.compact-chat-drawer { background: rgba(0,0,0,0.6); border-radius: 14px; margin-top: 8px; display: flex; flex-direction: column; overflow: hidden; height: 100px; }
+.chat-logs { flex: 1; padding: 6px 12px; overflow-y: auto; font-size: 12px; color: #f1f5f9; display: flex; flex-direction: column; gap: 3px; }
+.chat-bar-form { display: flex; padding: 4px; background: rgba(0,0,0,0.3); gap: 4px; }
+.chat-bar-form input { flex: 1; background: #fff; border: none; padding: 6px 10px; font-size: 12px; border-radius: 6px; }
+.chat-bar-form button { background: var(--ludo-blue); border: none; color: white; padding: 0 12px; border-radius: 6px; font-weight: bold; }
