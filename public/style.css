@@ -1,0 +1,90 @@
+:root {
+    --bg-dark: #070913;
+    --panel-purple: rgba(23, 18, 47, 0.6);
+    --neon-blue: #00f2fe;
+    --neon-gold: #ffcc00;
+    --hot-pink: #ff0055;
+    --neon-green: #00ff66;
+}
+
+body {
+    margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif;
+    background: radial-gradient(circle at center, #141233 0%, var(--bg-dark) 100%);
+    color: #fff; height: 100vh; display: flex; justify-content: center; align-items: center;
+    overflow: hidden;
+}
+
+.glass-container {
+    width: 95vw; max-width: 900px; height: 92vh;
+    background: var(--panel-purple); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px;
+    padding: 15px; display: flex; flex-direction: column; gap: 15px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+}
+
+.cyber-header {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.4); padding: 12px 20px; border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.05); font-weight: bold; font-size: 13px;
+}
+.gold-glow { color: var(--neon-gold); text-shadow: 0 0 8px var(--neon-gold); }
+
+.turn-status { padding: 6px 16px; border-radius: 8px; text-transform: uppercase; letter-spacing: 1px; }
+.red-glow { background: var(--hot-pink); box-shadow: 0 0 15px var(--hot-pink); }
+.green-glow { background: var(--neon-green); color: #000; box-shadow: 0 0 15px var(--neon-green); }
+.yellow-glow { background: var(--neon-gold); color: #000; box-shadow: 0 0 15px var(--neon-gold); }
+.blue-glow { background: var(--neon-blue); box-shadow: 0 0 15px var(--neon-blue); }
+
+.arena-layout { display: flex; gap: 15px; flex: 1; height: calc(100% - 70px); }
+.board-wrapper { flex: 1.2; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 15px; }
+
+/* 15x15 Matrix Canvas Setup */
+.ludo-board {
+    display: grid; grid-template-columns: repeat(15, 1fr); grid-template-rows: repeat(15, 1fr);
+    width: 360px; height: 360px; background: #0f1124; border-radius: 16px; padding: 6px;
+    border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+}
+.cell { background: #181b36; border: 1px solid #252a54; display: flex; justify-content: center; align-items: center; position: relative; }
+
+/* Home Bases & Pathway Visual Fills */
+.red-base { background: var(--hot-pink) !important; opacity: 0.85; }
+.green-base { background: var(--neon-green) !important; opacity: 0.85; }
+.yellow-base { background: var(--neon-gold) !important; opacity: 0.85; }
+.blue-base { background: var(--neon-blue) !important; opacity: 0.85; }
+.center-nexus { background: linear-gradient(45deg, var(--hot-pink), var(--neon-green), var(--neon-gold), var(--neon-blue)) !important; }
+.star-node::after { content: '✦'; color: var(--neon-blue); font-size: 14px; position: absolute; }
+
+/* Premium Fluid Tokens */
+.token-entity {
+    width: 18px; height: 18px; border-radius: 50%; border: 2px solid #fff;
+    box-shadow: 0 0 12px rgba(255,255,255,0.8); position: absolute; z-index: 10;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.pulse-active { animation: floatToken 0.6s infinite alternate; scale: 1.2; }
+@keyframes floatToken { 
+    0% { transform: translateY(0); } 
+    100% { transform: translateY(-4px); box-shadow: 0 0 18px #fff; } 
+}
+
+/* Action Control Dock */
+.action-dock { display: flex; align-items: center; gap: 15px; background: rgba(0,0,0,0.3); padding: 10px 20px; border-radius: 14px; width: 85%; justify-content: space-between; }
+.dice-block { font-size: 36px; background: #fff; color: #000; width: 48px; height: 48px; display: flex; justify-content: center; align-items: center; border-radius: 10px; box-shadow: 0 0 15px rgba(255,255,255,0.2); transition: transform 0.3s ease; }
+.rolling-fast { animation: hyperSpin 0.15s infinite linear; }
+@keyframes hyperSpin { 100% { transform: rotate(360deg); } }
+
+.gold-btn { background: linear-gradient(45deg, var(--neon-gold), #ff9900); border: none; padding: 12px 28px; border-radius: 10px; font-weight: bold; cursor: pointer; letter-spacing: 1px; color: #000; box-shadow: 0 4px 15px rgba(255,204,0,0.4); }
+
+/* Premium Sidebar Live Chat UI */
+.chat-sidebar { flex: 0.8; background: rgba(0,0,0,0.3); border-radius: 16px; border: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; overflow: hidden; }
+.chat-title { padding: 12px; font-weight: bold; font-size: 12px; background: rgba(255,255,255,0.03); border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--neon-blue); text-transform: uppercase; }
+.chat-output { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+.chat-input-bar { padding: 10px; display: flex; gap: 6px; background: rgba(0,0,0,0.4); }
+.chat-input-bar input { flex: 1; background: #070913; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; padding: 8px; font-size: 12px; }
+.chat-input-bar button { background: var(--neon-blue); border: none; padding: 0 14px; border-radius: 8px; cursor: pointer; }
+
+/* Responsive Viewports Layout adjustments for Telegram Mini App Mobile screens */
+@media(max-width: 768px) {
+    .arena-layout { flex-direction: column; }
+    .chat-sidebar { flex: none; height: 130px; }
+    .ludo-board { width: 300px; height: 300px; }
+}
